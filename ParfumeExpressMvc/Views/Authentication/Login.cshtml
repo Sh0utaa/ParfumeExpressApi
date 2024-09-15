@@ -2,16 +2,16 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-<form>
+<form id="loginForm">
     <h1>LOGIN</h1>
     <div class="form-group">
         <label for="exampleInputEmail1">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+        <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
     </div>
     <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
     </div>
     <div class="form-group form-check">
         <input type="checkbox" class="form-check-input" id="exampleCheck1">
@@ -19,4 +19,37 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            const loginData = {
+                email: $('input[name="email"]').val(),
+                password: $('input[name="password"]').val(),
+                twoFactorCode: "string",
+                twoFactorRecoveryCode: "string"
+            };
+            $.ajax({
+                url: 'https://localhost:7046/login?useCookies=true',
+                type: 'POST',
+                contentType: 'application/json',
+                xhrFields: {
+                    withCredentials: true // Ensures cookies are sent
+                },
+
+                data: JSON.stringify(loginData),
+                success: function(response) {
+                    // Handle success (e.g., store token, redirect)
+                    console.log(response);
+                    alert('Login successful');
+                },
+                error: function() {
+                    console.log(response);
+                    alert('Invalid login');
+                }
+            });
+        });
+    });
+</script>
 }
