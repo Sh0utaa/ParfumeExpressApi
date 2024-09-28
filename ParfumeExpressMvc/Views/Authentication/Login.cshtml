@@ -21,35 +21,44 @@
 </form>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#loginForm').on('submit', function(e) {
-            e.preventDefault();
-            const loginData = {
-                email: $('input[name="email"]').val(),
-                password: $('input[name="password"]').val(),
-                twoFactorCode: "string",
-                twoFactorRecoveryCode: "string"
-            };
-            $.ajax({
-                url: 'https://localhost:7046/login?useCookies=true',
-                type: 'POST',
-                contentType: 'application/json',
-                xhrFields: {
-                    withCredentials: true // Ensures cookies are sent
-                },
+        $(document).ready(function () {
+            $('#loginForm').on('submit', function (e) {
+                e.preventDefault();
 
-                data: JSON.stringify(loginData),
-                success: function(response) {
-                    // Handle success (e.g., store token, redirect)
-                    console.log(response);
-                    alert('Login successful');
-                },
-                error: function() {
-                    alert('Invalid login');
-                    console.log(response);
-                }
+                const loginData = {
+                    email: $('input[name="email"]').val(),
+                    password: $('input[name="password"]').val(),
+                    twoFactorCode: "string",
+                    twoFactorRecoveryCode: "string"
+                };
+
+                $.ajax({
+                    url: 'https://localhost:7046/login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    xhrFields: {
+                        withCredentials: true // Ensures cookies are sent
+                    },
+                    data: JSON.stringify(loginData),
+                    success: function (response) {
+                        // Assuming response contains the JWT tokens
+                        let accessToken = response.accessToken;
+                        let refreshToken = response.refreshToken;
+
+                        // Store the tokens in sessionStorage
+                        sessionStorage.setItem('accessToken', accessToken);
+                        sessionStorage.setItem('refreshToken', refreshToken);
+
+                        // Redirect or perform actions after successful login
+                        // window.location.href = '/home'; // Redirect to home page after successful login
+                    },
+                    error: function () {
+                        alert('Invalid login');
+                        console.log('Login failed');
+                    }
+                });
             });
         });
-    });
 </script>
+
 }
