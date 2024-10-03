@@ -1,15 +1,18 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ParfumeExpressApi.Data;
+using ParfumeExpressApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -26,20 +29,34 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAuthorization();
+// Add Identity services and JWT authentication
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<DataContext>()
+    .AddDefaultTokenProviders();
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<DataContext>();
-
-
-builder.Services.ConfigureApplicationCookie(options =>
+builder.Services.AddAuthentication(options =>
 {
-    options.Cookie.SameSite = SameSiteMode.None; // Allows cross-origin cookies
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensures cookies are only sent over HTTPS
-    options.Cookie.HttpOnly = true; // Ensures cookies are not accessible via JavaScript
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
 });
 
-// Add CORS policy to allow any origin (or specific origins)
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<JwtTokenService>();
+
+// Add CORS policy to allow specific origins
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -47,7 +64,7 @@ builder.Services.AddCors(options =>
         builder.WithOrigins("https://localhost:7283") // Replace with your MVC app's URL
                .AllowAnyHeader()
                .AllowAnyMethod()
-               .AllowCredentials(); // This is optional if you need to allow credentials (like cookies)
+               .AllowCredentials();
     });
 });
 
@@ -60,13 +77,59 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapIdentityApi<IdentityUser>();
-
 app.UseHttpsRedirection();
-
 app.UseCors("AllowSpecificOrigin");
-
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapPost("/api/auth/register", async (UserManager<IdentityUser> userManager, [FromBody] RegisterDto registerDto) =>
+{
+    if (string.IsNullOrEmpty(registerDto.Username) || string.IsNullOrEmpty(registerDto.Email) || string.IsNullOrEmpty(registerDto.Password))
+    {
+        return Results.BadRequest(new { error = "Username, email, and password are required." });
+    }
+
+    var existingUser = await userManager.FindByNameAsync(registerDto.Username);
+    if (existingUser != null)
+    {
+        return Results.BadRequest(new { error = "Username is already taken." });
+    }
+
+    var user = new IdentityUser
+    {
+        UserName = registerDto.Username,
+        Email = registerDto.Email
+    };
+
+    var result = await userManager.CreateAsync(user, registerDto.Password);
+    if (result.Succeeded)
+    {
+        return Results.Ok(new { message = "Registration successful" });
+    }
+    else
+    {
+        return Results.BadRequest(new { error = "Registration failed", errors = result.Errors });
+    }
+});
+
+app.MapPost("/api/auth/login", async (UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, [FromBody] LoginDto loginDto, JwtTokenService jwtTokenService) =>
+{
+    var user = await userManager.FindByEmailAsync(loginDto.Email);
+    if (user == null)
+    {
+        return Results.BadRequest(new { error = "Invalid email or password." });
+    }
+
+    var result = await signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+    if (!result.Succeeded)
+    {
+        return Results.BadRequest(new { error = "Invalid email or password." });
+    }
+
+    // Generate JWT token
+    var token = jwtTokenService.GenerateJwtToken(user);
+    return Results.Ok(new { token });
+});
 
 app.MapControllers();
 
