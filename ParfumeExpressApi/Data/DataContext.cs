@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ParfumeExpressApi.Models;
 
 namespace ParfumeExpressApi.Data
 {
@@ -10,5 +11,6 @@ namespace ParfumeExpressApi.Data
         {
         
         }
+        public DbSet<Post> Posts { get; set; }
     }
 }
