@@ -18,24 +18,28 @@ public class JwtTokenService
 
     public async Task<string> GenerateJwtToken(IdentityUser user)
     {
+        // Get user roles from Identity
         var userRoles = await _userManager.GetRolesAsync(user);
 
+        // Generate security key from configuration
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+        // Create claims (user identity information)
         var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Unique ID for this token
             new Claim(ClaimTypes.NameIdentifier, user.Id)
         };
 
-        // Add roles as claims
+        // Add roles to the claims
         foreach (var role in userRoles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+        // Create the token
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
@@ -44,6 +48,8 @@ public class JwtTokenService
             signingCredentials: credentials
         );
 
+        // Return the serialized token
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
+

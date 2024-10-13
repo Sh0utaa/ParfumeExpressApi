@@ -26,7 +26,7 @@ namespace ParfumeExpressApi.Repositories
         {
             var postModel = await _dataContext.Posts.FirstOrDefaultAsync(p => p.Id == id);
 
-            if (postModel != null) { return null; }
+            if (postModel == null) { return null; }
 
             _dataContext.Posts.Remove(postModel);
             await _dataContext.SaveChangesAsync();
@@ -43,26 +43,27 @@ namespace ParfumeExpressApi.Repositories
             return await _dataContext.Posts.FindAsync(postId);
         }
 
-        public async Task<Post?> UpdateAsync(int id, Post postModel)
+        public async Task<Post?> UpdateAsync(Post postModel)
         {
-            var existingPostModel = await _dataContext.Posts.FindAsync(id);
+            var existingPost = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id == postModel.Id);
 
-            if (existingPostModel == null)
+            if (existingPost == null)
             {
-                return null;
+                return null; // Return null if the post doesn't exist.
             }
 
-            postModel.Price = existingPostModel.Price;
-            postModel.PostTitle = existingPostModel.PostTitle;
-            postModel.PostBody = existingPostModel.PostTitle;
-            postModel.PostImage = existingPostModel.PostImage;
-            postModel.ParfumeGender = existingPostModel.ParfumeGender;
-            postModel.PostCreationTime = existingPostModel.PostCreationTime;
-            postModel.PostLastModifiedTime = existingPostModel.PostLastModifiedTime;
+            // Update only the fields that are allowed to change.
+            existingPost.Price = postModel.Price;
+            existingPost.PostTitle = postModel.PostTitle;
+            existingPost.PostBody = postModel.PostBody;
+            existingPost.PostImage = postModel.PostImage;
+            existingPost.ParfumeGender = postModel.ParfumeGender;
+            existingPost.PostLastModifiedTime = DateTime.Now; // Set modified time to now.
 
             await _dataContext.SaveChangesAsync();
 
-            return postModel;
+            return existingPost;
         }
+
     }
 }
