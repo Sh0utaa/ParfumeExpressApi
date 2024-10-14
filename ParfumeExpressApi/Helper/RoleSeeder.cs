@@ -8,12 +8,24 @@ namespace ParfumeExpressApi.Helper
             RoleManager<IdentityRole> roleManager,
             UserManager<IdentityUser> userManager)
         {
-            // Check if the Admin role exists, if not, create it
+            // <summary>
+            // On startup adding role "Admin" to database and assigning Shota Tevdorashvili as the first Admin
+            // </summary>
+
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
+            var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
+
+            if (adminUser != null) 
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+
+
+            // OLD CODE
             //// Create an admin user if it doesn't already exist
             //var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
             //if (adminUser == null)

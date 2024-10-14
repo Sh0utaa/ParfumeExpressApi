@@ -15,12 +15,12 @@ namespace ParfumeExpressApi.Repositories
             _signInManager = signInManager;
         }
 
-        public async Task<IdentityUser> CreateAdminRole(IdentityUser user)
+        public async Task<IdentityUser> CreateAdminRole(string userEmail)
         {
-            var userModel = await _userManager.FindByEmailAsync(user.Email);
+            var userModel = await _userManager.FindByEmailAsync(userEmail);
             if (userModel != null)
             {
-                await _userManager.AddToRoleAsync(user, "Admin");
+                await _userManager.AddToRoleAsync(userModel, "Admin");
             }
             return userModel;
         }

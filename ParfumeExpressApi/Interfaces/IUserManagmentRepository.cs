@@ -5,7 +5,7 @@ namespace ParfumeExpressApi.Interfaces
     public interface IUserManagmentRepository
     {
         Task<IdentityUser> FindByEmail(string Email);
-        Task<IdentityUser> CreateAdminRole(IdentityUser user);
+        Task<IdentityUser> CreateAdminRole(string userEmail);
         Task<bool> ValidateUserCredentialsAsync(string email, string password);
     }
 }
