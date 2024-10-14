@@ -17,32 +17,27 @@ namespace ParfumeExpressApi.Helper
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
+            //var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
 
-            if (adminUser != null) 
+            //if (adminUser != null) 
+            //{
+            //    await userManager.AddToRoleAsync(adminUser, "Admin");
+            //}
+
+            // Create an admin user if it doesn't already exist
+            var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
+            if (adminUser == null)
             {
+                adminUser = new IdentityUser
+                {
+                    UserName = "ShotaTevdorashvili",
+                    Email = "shotatevdorashvilibusiness@gmail.com"
+                };
+
+                var result = await userManager.CreateAsync(adminUser, "AdminPassword123!");
+
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
-
-
-            // OLD CODE
-            //// Create an admin user if it doesn't already exist
-            //var adminUser = await userManager.FindByEmailAsync("shotatevdorashvilibusiness@gmail.com");
-            //if (adminUser == null)
-            //{
-            //    adminUser = new IdentityUser
-            //    {
-            //        UserName = "ShotaTevdorashvili",
-            //        Email = "shotatevdorashvilibusiness@example.com"
-            //    };
-
-            //    var result = await userManager.CreateAsync(adminUser, "AdminPassword123!");
-
-            //    if (result.Succeeded)
-            //    {
-            //        await userManager.AddToRoleAsync(adminUser, "Admin");
-            //    }
-            //}
         }
     }
 }

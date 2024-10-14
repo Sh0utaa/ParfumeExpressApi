@@ -6,9 +6,9 @@ namespace ParfumeExpressApi.Repositories
     public class UserManagmentRepository : IUserManagmentRepository
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityUser> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        public UserManagmentRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityUser> roleManager, SignInManager<IdentityUser> signInManager)
+        public UserManagmentRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
