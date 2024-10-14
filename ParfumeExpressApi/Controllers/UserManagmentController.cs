@@ -23,9 +23,33 @@ namespace ParfumeExpressApi.Controllers
 
             var result = await _userManagmentRepository.CreateAdminRole(userEmail);
 
-            if(result == null) { return BadRequest(ModelState + " Email doesn't exist"); }
+            if (result == null) { return BadRequest(ModelState + " Email doesn't exist"); }
+
+            else { return Ok(userEmail + " Added as Admin"); }
+        }
+
+        [HttpGet("getAllUsers")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var result = await _userManagmentRepository.GetAllUsersAsync();
+
+            if (result == null) { return NotFound(); }
+
+            return Ok(result);
+        }
+
+        [HttpGet("getAllAdmins")]
+        public async Task<IActionResult> GetAllAdmins()
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+
+            var result = await _userManagmentRepository.GetAllAdminsAsync();
+             
+            if (result == null) { return NotFound(); };
             
-            else {  return Ok(userEmail + " Added as Admin"); }
+            return Ok(result);
         }
 
         [HttpGet("getUserByEmail/{userEmail}")]
@@ -37,7 +61,9 @@ namespace ParfumeExpressApi.Controllers
             
             if(result == null) { return NotFound(userEmail); }
             
-            else { return Ok(result);  }
+            return Ok(result);
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ParfumeExpressApi.Interfaces;
 
 namespace ParfumeExpressApi.Repositories
@@ -25,9 +26,31 @@ namespace ParfumeExpressApi.Repositories
             return userModel;
         }
 
-        public async Task<IdentityUser> FindByEmail(string Email)
+        public async Task<IdentityUser?> FindByEmail(string Email)
         {
             return await _userManager.FindByEmailAsync(Email);
+        }
+
+        public async Task<List<IdentityUser>?> GetAllAdminsAsync()
+        {
+            var admins = new List<IdentityUser>();
+
+            var users = _userManager.Users.ToList();
+
+            foreach (var user in users)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    admins.Add(user);
+                }
+            }
+
+            return admins;
+        }
+
+        public async Task<List<IdentityUser>?> GetAllUsersAsync()
+        {
+            return await _userManager.Users.ToListAsync();
         }
 
         public async Task<bool> ValidateUserCredentialsAsync(string email, string password)
