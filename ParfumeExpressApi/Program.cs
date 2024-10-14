@@ -8,7 +8,7 @@ using ParfumeExpressApi.Data;
 using ParfumeExpressApi.Interfaces;
 using ParfumeExpressApi.Models;
 using ParfumeExpressApi.Repositories;
-using Swashbuckle.AspNetCore.Filters;
+using ParfumeExpressApi.Helper;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +78,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IUserManagmentRepository, UserManagmentRepository>();
 
 
 // Add CORS policy to allow specific origins
@@ -93,6 +94,18 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Use a scope to access services like RoleManager and UserManager
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
+    // Call the RoleSeeder to seed roles and admin user
+    await RoleSeeder.SeedRolesAndAdminUser(roleManager, userManager);
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
