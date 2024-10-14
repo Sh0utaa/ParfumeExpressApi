@@ -16,6 +16,20 @@ namespace ParfumeExpressApi.Repositories
             _signInManager = signInManager;
         }
 
+        public async Task<IdentityResult> ChangePasswordAsync(string email, string currentPassword, string newPassword)
+        {
+            // Find the user by email
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            // Attempt to change the password
+            var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            return result;
+        }
+
         public async Task<IdentityUser> CreateAdminRole(string userEmail)
         {
             var userModel = await _userManager.FindByEmailAsync(userEmail);

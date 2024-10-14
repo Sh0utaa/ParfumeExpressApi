@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ParfumeExpressApi.DTOs;
 using ParfumeExpressApi.Interfaces;
-using ParfumeExpressApi.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ParfumeExpressApi.Controllers
 {
@@ -58,10 +58,39 @@ namespace ParfumeExpressApi.Controllers
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
             var result = await _userManagmentRepository.FindByEmail(userEmail);
-            
-            if(result == null) { return NotFound(userEmail); }
-            
+
+            if (result == null) { return NotFound(userEmail); }
+
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+        {
+            var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+
+            if (email == null)
+            {
+                return Unauthorized(new { message = "User email not found in token" });
+            }
+            
+            var user = await _userManagmentRepository.FindByEmail(email);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            // Change the password
+            var result = await _userManagmentRepository.ChangePasswordAsync(email, model.CurrentPassword, model.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { errors = result.Errors });
+            }
+
+
+            return Ok(new { message = "Password changed successfully "});
         }
 
 
