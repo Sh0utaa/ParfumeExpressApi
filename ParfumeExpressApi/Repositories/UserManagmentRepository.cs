@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ParfumeExpressApi.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ParfumeExpressApi.Repositories
 {
@@ -9,11 +10,19 @@ namespace ParfumeExpressApi.Repositories
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        public UserManagmentRepository(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager)
+        private readonly IPasswordValidator<IdentityUser> _passwordValidator;
+
+        public UserManagmentRepository(
+            UserManager<IdentityUser> userManager, 
+            RoleManager<IdentityRole> roleManager, 
+            SignInManager<IdentityUser> signInManager,
+            IPasswordValidator<IdentityUser> passwordValidator
+            )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
+            _passwordValidator = passwordValidator;
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(string email, string currentPassword, string newPassword)
@@ -25,8 +34,26 @@ namespace ParfumeExpressApi.Repositories
                 return IdentityResult.Failed(new IdentityError { Description = "User not found." });
             }
 
+            var isCurrentPasswordValid = await _userManager.CheckPasswordAsync(user, currentPassword);
+            if (!isCurrentPasswordValid)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "Current password is incorrect." });
+            }
+
+            var passwordValidationResult = await _passwordValidator.ValidateAsync(_userManager, user, newPassword);
+            if (!passwordValidationResult.Succeeded)
+            {
+                var errors = string.Join(", ", passwordValidationResult.Errors.Select(e => e.Description));
+                return IdentityResult.Failed(new IdentityError { Description = errors });
+            }
+
             // Attempt to change the password
             var result = await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+            if (result.Succeeded)
+            {
+                return IdentityResult.Success;
+            }
+
             return result;
         }
 

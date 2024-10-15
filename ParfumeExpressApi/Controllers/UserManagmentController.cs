@@ -86,9 +86,9 @@ namespace ParfumeExpressApi.Controllers
 
             if (!result.Succeeded)
             {
-                return BadRequest(new { errors = result.Errors });
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return BadRequest($"Password change failed: {errors}");
             }
-
 
             return Ok(new { message = "Password changed successfully "});
         }
