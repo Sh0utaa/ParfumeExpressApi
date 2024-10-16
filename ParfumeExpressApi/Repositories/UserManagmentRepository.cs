@@ -103,5 +103,14 @@ namespace ParfumeExpressApi.Repositories
             return result.Succeeded;
         }
 
+        public async Task<string?> DeleteUserAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user == null) { return null; }
+
+            var result = _userManager.DeleteAsync(user);
+            
+            return $"{email} Account successfully deleted.";
+        }
     }
 }

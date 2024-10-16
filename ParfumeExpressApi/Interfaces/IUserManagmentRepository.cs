@@ -10,5 +10,6 @@ namespace ParfumeExpressApi.Interfaces
         Task<IdentityResult> ChangePasswordAsync(string email, string currentPassword, string newPassword);
         Task<IdentityUser> CreateAdminRole(string userEmail);
         Task<bool> ValidateUserCredentialsAsync(string email, string password);
+        Task<string?> DeleteUserAsync(string email);
     }
 }

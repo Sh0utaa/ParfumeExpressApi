@@ -8,6 +8,7 @@ namespace ParfumeExpressApi.Controllers
 {
     [Route("api/userManagment")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class UserManagmentController : ControllerBase
     {
         private readonly IUserManagmentRepository _userManagmentRepository;
@@ -93,6 +94,18 @@ namespace ParfumeExpressApi.Controllers
             return Ok(new { message = "Password changed successfully "});
         }
 
+        [HttpDelete("DeleteUser/{userEmail}")]
+        public async Task<IActionResult> DeleteUser(string userEmail)
+        {
+            var result = await _userManagmentRepository.DeleteUserAsync(userEmail);
+
+            if(result == null)
+            {
+                return NotFound($"account {userEmail} was not found");
+            }
+
+            return Ok(result);
+        }
 
     }
 }

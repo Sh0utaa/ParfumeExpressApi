@@ -56,7 +56,7 @@ namespace ParfumeExpressApi.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] createPostDTO postDto)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
@@ -69,7 +69,7 @@ namespace ParfumeExpressApi.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] Post postModel)
         {
             if (!ModelState.IsValid) { return NotFound(); }
@@ -80,6 +80,7 @@ namespace ParfumeExpressApi.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdatePostDto updatePostDto)
         {
             var existingPost = await _postRepository.GetByIdAsync(id);
@@ -121,6 +122,7 @@ namespace ParfumeExpressApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
