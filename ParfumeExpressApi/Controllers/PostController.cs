@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ParfumeExpressApi.DTOs;
 using ParfumeExpressApi.Interfaces;
-using ParfumeExpressApi.Mappers;
-using ParfumeExpressApi.Models;
 
 namespace ParfumeExpressApi.Controllers
 {
@@ -13,9 +10,11 @@ namespace ParfumeExpressApi.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostRepository _postRepository;
-        public PostController(IPostRepository postRepository)
+        private readonly IImageRepository _imageRepository;
+        public PostController(IPostRepository postRepository, IImageRepository imageRepository)
         {
             _postRepository = postRepository;
+            _imageRepository = imageRepository;
         }
 
         [HttpGet]
@@ -77,7 +76,7 @@ namespace ParfumeExpressApi.Controllers
 
         [HttpPatch("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdatePostDto updatePostDto)
+        public async Task<IActionResult> UpdatePartial(int id, [FromForm] UpdatePostDto updatePostDto)
         {
             var existingPost = await _postRepository.GetByIdAsync(id);
 
@@ -99,9 +98,9 @@ namespace ParfumeExpressApi.Controllers
                 existingPost.PostBody = updatePostDto.PostBody;
             }
 
-            if (!string.IsNullOrEmpty(updatePostDto.PostImage))
+            if (updatePostDto != null)
             {
-                existingPost.PostImagePath = updatePostDto.PostImage;
+                existingPost.PostImagePath = await _imageRepository.UpdateImageAsync(existingPost.PostImagePath, updatePostDto.PostImagePath);
             }
 
             if (updatePostDto.ParfumeGender.HasValue)

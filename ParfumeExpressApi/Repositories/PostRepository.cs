@@ -11,14 +11,17 @@ namespace ParfumeExpressApi.Repositories
     public class PostRepository : IPostRepository
     {
         private readonly DataContext _dataContext;
-        public PostRepository(DataContext dataContext)
+        private readonly IImageRepository _imageRepository;
+
+        public PostRepository(DataContext dataContext, IImageRepository imageRepository)
         {
             _dataContext = dataContext;
+            _imageRepository = imageRepository;
         }
 
         public async Task<Post> CreateAsync(createPostDTO postModel)
         {
-            string? imagePath = await SaveImageAsync(postModel.PostImagePath);
+            string? imagePath = await _imageRepository.SaveImageAsync(postModel.PostImagePath);
 
             var post = postModel.ToPostFromCreatePostDTO(imagePath);
 
@@ -37,28 +40,11 @@ namespace ParfumeExpressApi.Repositories
             return post;
         }
 
-        private async Task<string?> SaveImageAsync(IFormFile? image)
-        {
-            if (image == null || image.Length == 0)
-                return null;
-
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
-            Directory.CreateDirectory(uploadsFolder); // Ensure the folder exists
-
-            var fileName = $"{Guid.NewGuid()}_{image.FileName}";
-            var filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await image.CopyToAsync(stream);
-            }
-
-            return $"/images/{fileName}"; // Return relative path
-        }
-
         public async Task<Post?> DeleteAsync(int id)
         {
             var postModel = await _dataContext.Posts.FirstOrDefaultAsync(p => p.Id == id);
+
+            await _imageRepository.DeleteImageAsync(postModel.PostImagePath);
 
             if (postModel == null) { return null; }
 

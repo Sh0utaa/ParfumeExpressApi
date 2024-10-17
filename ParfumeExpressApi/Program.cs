@@ -81,6 +81,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserManagmentRepository, UserManagmentRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
 
 // Add CORS policy to allow specific origins
