@@ -7,7 +7,7 @@ namespace ParfumeExpressApi.DTOs
         public double Price { get; set; }
         public string PostTitle { get; set; }
         public string PostBody { get; set; }
-        public string? PostImage { get; set; }
+        public IFormFile? PostImagePath { get; set; }
         public Gender ParfumeGender { get; set; }
         // <summary>
         // 0 - Unisex

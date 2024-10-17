@@ -57,26 +57,22 @@ namespace ParfumeExpressApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] createPostDTO postDto)
+        public async Task<IActionResult> Create([FromForm] createPostDTO postDto)
         {
-            if (!ModelState.IsValid) { return BadRequest(ModelState); }
+            try
+            {
+                if (!ModelState.IsValid) { return BadRequest(ModelState); }
 
-            var post = postDto.ToPostFromCreatePostDTO();
+                await _postRepository.CreateAsync(postDto);
 
-            await _postRepository.CreateAsync(post);
+                return Ok("Post Successfully created!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return StatusCode(500, "Internal server error.");
+            }
 
-            return Ok("Post Successfully created!");
-        }
-
-        [HttpPut]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update([FromBody] Post postModel)
-        {
-            if (!ModelState.IsValid) { return NotFound(); }
-
-            var updatedPostModel = await _postRepository.UpdateAsync(postModel);
-
-            return Ok(updatedPostModel + " post updated!");
         }
 
         [HttpPatch("{id}")]
@@ -105,7 +101,7 @@ namespace ParfumeExpressApi.Controllers
 
             if (!string.IsNullOrEmpty(updatePostDto.PostImage))
             {
-                existingPost.PostImage = updatePostDto.PostImage;
+                existingPost.PostImagePath = updatePostDto.PostImage;
             }
 
             if (updatePostDto.ParfumeGender.HasValue)

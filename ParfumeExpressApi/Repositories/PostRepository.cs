@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ParfumeExpressApi.Data;
+using ParfumeExpressApi.DTOs;
 using ParfumeExpressApi.Interfaces;
+using ParfumeExpressApi.Mappers;
 using ParfumeExpressApi.Models;
 using System.Reflection.Metadata.Ecma335;
 
@@ -14,12 +16,44 @@ namespace ParfumeExpressApi.Repositories
             _dataContext = dataContext;
         }
 
-        public async Task<Post> CreateAsync(Post postModel)
+        public async Task<Post> CreateAsync(createPostDTO postModel)
         {
-            await _dataContext.AddAsync(postModel);
-            await _dataContext.SaveChangesAsync();
+            string? imagePath = await SaveImageAsync(postModel.PostImagePath);
 
-            return postModel;
+            var post = postModel.ToPostFromCreatePostDTO(imagePath);
+
+
+            try
+            {
+                _dataContext.Posts.AddAsync(post);
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
+
+            return post;
+        }
+
+        private async Task<string?> SaveImageAsync(IFormFile? image)
+        {
+            if (image == null || image.Length == 0)
+                return null;
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+            Directory.CreateDirectory(uploadsFolder); // Ensure the folder exists
+
+            var fileName = $"{Guid.NewGuid()}_{image.FileName}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            return $"/images/{fileName}"; // Return relative path
         }
 
         public async Task<Post?> DeleteAsync(int id)
@@ -56,7 +90,7 @@ namespace ParfumeExpressApi.Repositories
             existingPost.Price = postModel.Price;
             existingPost.PostTitle = postModel.PostTitle;
             existingPost.PostBody = postModel.PostBody;
-            existingPost.PostImage = postModel.PostImage;
+            existingPost.PostImagePath = postModel.PostImagePath;
             existingPost.ParfumeGender = postModel.ParfumeGender;
             existingPost.PostLastModifiedTime = DateTime.Now; // Set modified time to now.
 

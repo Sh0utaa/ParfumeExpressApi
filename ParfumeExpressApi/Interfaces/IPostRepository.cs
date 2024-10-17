@@ -1,4 +1,5 @@
-﻿using ParfumeExpressApi.Models;
+﻿using ParfumeExpressApi.DTOs;
+using ParfumeExpressApi.Models;
 
 namespace ParfumeExpressApi.Interfaces
 {
@@ -6,7 +7,7 @@ namespace ParfumeExpressApi.Interfaces
     {
         Task<List<Post>> GetAllAsync();
         Task<Post?> GetByIdAsync(int postId);
-        Task<Post> CreateAsync(Post postModel);
+        Task<Post> CreateAsync(createPostDTO postModel);
         Task<Post?> UpdateAsync(Post postModel);
         Task<Post?> DeleteAsync(int id);
     }
