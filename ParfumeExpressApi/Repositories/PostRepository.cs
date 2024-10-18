@@ -63,6 +63,11 @@ namespace ParfumeExpressApi.Repositories
             return await _dataContext.Posts.FindAsync(postId);
         }
 
+        public async Task<Post?> GetByTitleAsync(string postTitle)
+        {
+            return await _dataContext.Posts.FirstOrDefaultAsync(x => x.PostTitle == postTitle);
+        }
+
         public async Task<Post?> UpdateAsync(Post postModel)
         {
             var existingPost = await _dataContext.Posts.FirstOrDefaultAsync(x => x.Id == postModel.Id);
@@ -85,5 +90,9 @@ namespace ParfumeExpressApi.Repositories
             return existingPost;
         }
 
+        public async Task<bool> PostExists(int postId)
+        {
+            return await _dataContext.Posts.AnyAsync(p => p.Id == postId);
+        }
     }
 }

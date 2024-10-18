@@ -36,7 +36,7 @@ namespace ParfumeExpressApi.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("/getById/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             if (!ModelState.IsValid)
@@ -45,6 +45,24 @@ namespace ParfumeExpressApi.Controllers
             }
 
             var post = await _postRepository.GetByIdAsync(id);
+
+            if (post == null)
+            {
+                return NotFound("No posts found.");
+            }
+
+            return Ok(post);
+        }
+
+        [HttpGet("/getByTitle/{postTitle}")]
+        public async Task<IActionResult> GetByTitle(string postTitle)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var post = await _postRepository.GetByTitleAsync(postTitle);
 
             if (post == null)
             {

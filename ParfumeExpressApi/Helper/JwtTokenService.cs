@@ -30,8 +30,10 @@ public class JwtTokenService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Unique ID for this token
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            new Claim(ClaimTypes.NameIdentifier, user.Id),  // User ID
+            new Claim(ClaimTypes.Name, user.UserName)  // Username for User.Identity.Name
         };
+
 
         // Add roles to the claims
         foreach (var role in userRoles)

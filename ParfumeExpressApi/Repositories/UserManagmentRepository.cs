@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ParfumeExpressApi.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ParfumeExpressApi.Repositories
 {
