@@ -21,31 +21,5 @@
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function () {
-        $('#registerForm').on('submit', function (e) {
-            e.preventDefault();
-            const registerData = {
-                email: $('input[name="email"]').val(),
-                password: $('input[name="password"]').val(),
-            };
-            $.ajax({
-                url: 'https://localhost:7046/register',
-                type: 'POST',
-                contentType: 'application/json',
-
-                data: JSON.stringify(registerData),
-                success: function (response) {
-                    // Handle success (e.g., store token, redirect)
-                    console.log(response);
-                    alert('Registration successful');
-                },
-                error: function () {
-                    alert('Invalid Registration');
-                    console.log(response);
-                }
-            });
-        });
-    });
-</script>
+<script src="~/js/registrationAuthentication.js"></script>
 }
