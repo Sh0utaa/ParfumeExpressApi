@@ -23,13 +23,9 @@ namespace ParfumeExpressMvc.Controllers
             return View();
         }
 
-        public IActionResult Login()
+        public IActionResult Authentication()
         {
-            return View("~/Views/Authentication/Login.cshtml");
-        }
-        public IActionResult Register()
-        {
-            return View("~/Views/Authentication/Register.cshtml");
+            return View("~/Views/Authentication/Authentication.cshtml");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
