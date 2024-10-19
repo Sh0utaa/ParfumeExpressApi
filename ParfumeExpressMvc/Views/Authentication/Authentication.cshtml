@@ -3,60 +3,60 @@
 *@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
-@section head {
-    <link rel="stylesheet" href="~/css/Authentication/Authentication.css" type="text/css" />
-}
-<section class="auth-page">
-    <div class="wrapper">
-        <div class="title-text">
-            <div class="title login">Login Form</div>
-            <div class="title signup">Signup Form</div>
-        </div>
-        <div class="form-container">
-            <div class="slide-controls">
-                <input type="radio" name="slide" id="login" checked>
-                <input type="radio" name="slide" id="signup">
-                <label for="login" class="slide login">Login</label>
-                <label for="signup" class="slide signup">Signup</label>
-                <div class="slider-tab"></div>
+    <link rel="stylesheet" href="~/css/Authentication/Authentication.css" />
+    <section class="auth-page">
+        <div class="wrapper">
+            <div class="title-text">
+                <div class="title login">Login Form</div>
+                <div class="title signup">Signup Form</div>
             </div>
-            <div class="form-inner">
-                <form action="#" class="login">
-                    <div class="field">
-                        <input type="text" placeholder="Email Address" required>
-                    </div>
-                    <div class="field">
-                        <input type="password" placeholder="Password" required>
-                    </div>
-                    <div class="pass-link"><a href="#">Forgot password?</a></div>
-                    <div class="field btn">
-                        <div class="btn-layer"></div>
-                        <input type="submit" value="Login">
-                    </div>
-                    <div class="signup-link">Not a member? <a href="">Signup now</a></div>
-                </form>
-                <form action="#" class="signup">
-                    <div class="field">
-                        <input type="text" placeholder="Email Address" required>
-                    </div>
-                    <div class="field">
-                        <input type="password" placeholder="Password" required>
-                    </div>
-                    <div class="field">
-                        <input type="password" placeholder="Confirm password" required>
-                    </div>
-                    <div class="field btn">
-                        <div class="btn-layer"></div>
-                        <input type="submit" value="Signup">
-                    </div>
-                </form>
+            <div class="form-container">
+                <div class="slide-controls">
+                    <input type="radio" name="slide" id="login" checked>
+                    <input type="radio" name="slide" id="signup">
+                    <label for="login" class="slide login">Login</label>
+                    <label for="signup" class="slide signup">Signup</label>
+                    <div class="slider-tab"></div>
+                </div>
+                <div class="form-inner">
+                    <form class="login" id="loginForm">
+                        <div class="field">
+                            <input name="email" type="email" placeholder="Email Address" required autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <input name="password" type="password" placeholder="Password" required autocomplete="off">
+                        </div>
+                        <div class="pass-link"><a href="#">Forgot password?</a></div>
+                        <div class="field btn">
+                            <div class="btn-layer"></div>
+                            <input type="submit">
+                        </div>
+                        <div class="signup-link">Not a member? <a href="">Signup now</a></div>
+                    </form>
+
+                    <form class="signup" id="registerForm">
+                        <div class="field">
+                            <input name="username" type="text" placeholder="User Name" required autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <!-- Fixed the typo -->
+                            <input name="email" type="text" placeholder="Email Address" required autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <input name="password" type="password" placeholder="Password" required autocomplete="off">
+                        </div>
+                        <div class="field btn">
+                            <div class="btn-layer"></div>
+                            <input type="submit" value="Signup">
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-
-
-<script src="~/js/Authentication/Authentication.js"></script>
-<script src="~/js/Authentication/APIRequests.js"></script>
+        <!-- Include jQuery from CDN -->
+        <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  -->
+        <script src="~/js/Authentication/APIRequests.js"></script>
+        <script src="~/js/Authentication/Authentication.js"></script>
+    </section>
+}
