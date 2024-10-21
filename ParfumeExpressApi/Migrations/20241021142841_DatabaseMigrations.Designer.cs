@@ -12,8 +12,8 @@ using ParfumeExpressApi.Data;
 namespace ParfumeExpressApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241018130433_addedJWTClaims")]
-    partial class addedJWTClaims
+    [Migration("20241021142841_DatabaseMigrations")]
+    partial class DatabaseMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -272,6 +272,10 @@ namespace ParfumeExpressApi.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PostBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostBrand")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

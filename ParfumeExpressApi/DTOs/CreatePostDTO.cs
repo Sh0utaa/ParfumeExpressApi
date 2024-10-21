@@ -5,6 +5,7 @@ namespace ParfumeExpressApi.DTOs
     public class createPostDTO
     {
         public double Price { get; set; }
+        public string PostBrand { get; set; }
         public string PostTitle { get; set; }
         public string PostBody { get; set; }
         public IFormFile? PostImagePath { get; set; }

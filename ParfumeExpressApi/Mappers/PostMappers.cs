@@ -10,6 +10,7 @@ namespace ParfumeExpressApi.Mappers
             return new Post
             {
                 Price = postDto.Price,
+                PostBrand = postDto.PostBrand,
                 PostTitle = postDto.PostTitle,
                 PostBody = postDto.PostBody,
                 PostImagePath = imagePath,

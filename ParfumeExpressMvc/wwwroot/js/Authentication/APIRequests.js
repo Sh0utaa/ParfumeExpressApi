@@ -71,6 +71,7 @@
                 return response.json();
             })
             .then(data => {
+                loginBtn.click();
                 console.log('Success Response:', data);
                 alert('Registration successful');
                 // Optionally, redirect or perform another action here

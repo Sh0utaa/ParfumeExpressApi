@@ -272,6 +272,10 @@ namespace ParfumeExpressApi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PostBrand")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("PostCreationTime")
                         .HasColumnType("datetime2");
 

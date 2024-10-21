@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ParfumeExpressApi.Migrations
 {
     /// <inheritdoc />
-    public partial class AllMigrationsUpdate : Migration
+    public partial class DatabaseMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,6 +57,7 @@ namespace ParfumeExpressApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Price = table.Column<double>(type: "float", nullable: false),
+                    PostBrand = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostBody = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -185,6 +186,7 @@ namespace ParfumeExpressApi.Migrations
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

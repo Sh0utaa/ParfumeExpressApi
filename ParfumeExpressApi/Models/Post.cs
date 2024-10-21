@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public double Price { get; set; }
+        public string PostBrand { get; set; }
         public string PostTitle { get; set; }
         public string PostBody { get; set; }
         public string? PostImagePath { get; set; }
